@@ -32,11 +32,19 @@ var outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/
   accessToken: API_KEY
 });
 
+var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+    maxZoom: 18,
+    id: "dark-v10",
+    accessToken: API_KEY
+  });
+
 // Define baseMaps Object to Hold Base Layers
 var baseMaps = {
     "Satellite": satelliteMap,
     "Grayscale": graymap,
-    "Outdoors": outdoors
+    "Outdoors": outdoors,
+    "Dark Map": darkmap
 };
 
 // Create Overlay Object to Hold Overlay Layers
@@ -48,12 +56,14 @@ var overlayMaps = {
 // Create Map, Passing In satelliteMap & earthquakes as Default Layers to Display on Load
 var myMap = L.map("map", {
     center: [37.09, -95.71],
-    zoom: 2,
-    layers: [satelliteMap, earthquakes]
+    zoom: 4,
+    layers: [outdoors, earthquakes]
 });
 
 // Create a Layer Control + Pass in baseMaps and overlayMaps + Add the Layer Control to the Map
-L.control.layers(baseMaps, overlayMaps).addTo(myMap);
+L.control.layers(baseMaps, overlayMaps, {
+    collapsed: false
+}).addTo(myMap);
 
 // Retrieve earthquakesURL (USGS Earthquakes GeoJSON Data) with D3
 d3.json(earthquakesURL, function(earthquakeData) {
@@ -122,22 +132,59 @@ d3.json(earthquakesURL, function(earthquakeData) {
         // Add tectonicPlates Layer to the Map
         tectonicPlates.addTo(myMap);
     });
+    // ==============================================
+// Here we create a legend control object.
+    var legend = L.control({
+        position: "bottomright"
+    });
 
-    // Set Up Legend
-    var legend = L.control({ position: "bottomright" });
     legend.onAdd = function() {
-        var div = L.DomUtil.create("div", "info legend"), 
-        magnitudeLevels = [0, 1, 2, 3, 4, 5];
+        var div = L.DomUtil.create("div", "info legend");
 
-        div.innerHTML += "<h3>Magnitude</h3>"
+        var magnitude = [0, 1, 2, 3, 4, 5];
+        var colors = [
+            "#DAF7A6",
+            "#FFC300",
+            "#FF5733",
+            "#C70039",
+            "#900C3F",
+            "#581845"];
 
-        for (var i = 0; i < magnitudeLevels.length; i++) {
-            div.innerHTML +=
-                '<i style="background: ' + chooseColor(magnitudeLevels[i] + 1) + '"></i> ' +
-                magnitudeLevels[i] + (magnitudeLevels[i + 1] ? '&ndash;' + magnitudeLevels[i + 1] + '<br>' : '+');
+        // Loop through our intervals and generate a label with a colored square for each interval.
+        for (var i = 0; i < magnitude.length; i++) {
+        div.innerHTML += "<i style='background: "
+            + chooseColor(magnitude[i] + 1) + "'></i> "+
+            magnitude[i] + (magnitude[i + 1] ? "&ndash;" + magnitude[i + 1] + "<br>" : "+");
         }
         return div;
     };
+    //================================================
+
+    // // Set Up Legend
+    // var legend = L.control({ position: "bottomright" });
+    // legend.onAdd = function() {
+    //     var div = L.DomUtil.create("div", "info legend"), 
+    //      magnitudeLevels = [0, 1, 2, 3, 4, 5];
+    //      colors = [
+    //         "#DAF7A6",
+    //         "#FFC300",
+    //         "#FF5733",
+    //         "#C70039",
+    //         "#900C3F",
+    //         "#581845"];
+
+    //     div.innerHTML += "<h3>Magnitude</h3>"
+
+    //     for (var i = 0; i < magnitudeLevels.length; i++) {
+    //         div.innerHTML +=
+    //             '<i style="background: ' 
+    //             + colors[i] 
+    //             + '"></i> ' 
+    //             + magnitudeLevels[i] + (magnitudeLevels[i + 1] ? '&ndash;' 
+    //             + magnitudeLevels[i + 1] + '<br>' : '+');
+    //     }
+    //     return div;
+    // };
     // Add Legend to the Map
     legend.addTo(myMap);
 });
