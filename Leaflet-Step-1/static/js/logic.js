@@ -1,24 +1,16 @@
 // Store our API endpoint inside queryUrl
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
 
-var queryUrl2 = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
+//var queryPlates = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
   
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
     // Once we get a response, send the data.features object to the createFeatures function
     createFeatures(data.features);
   });
-
-  // Perform a GET request to the query URL2
-d3.json(queryUrl2, function(data2) {
-    // Once we get a response, send the data.features object to the createFeatures function
-    createFeatures2(data2.features);
- });
-
-
-
- function createFeatures(earthquakeData) {
-
+  
+  function createFeatures(earthquakeData) {
+  
     // Define a function we want to run once for each feature in the features array
     // Give each feature a popup describing the place and time of the earthquake
     function onEachFeature(feature, layer) {
@@ -35,7 +27,7 @@ d3.json(queryUrl2, function(data2) {
     // Sending our earthquakes layer to the createMap function
     createMap(earthquakes);
   }
-
+  
   function createMap(earthquakes) {
 
     // Define streetmap and darkmap layers
@@ -66,17 +58,16 @@ d3.json(queryUrl2, function(data2) {
         accessToken: API_KEY
     });
 
-      // Define a baseMaps object to hold our base layers
+  // Define a baseMaps object to hold our base layers
   var baseMaps = {
     "Satellite": satellitemap,
-    "Gray Scalle": graymap,
+    "Grayscale": graymap,
     "Outdoors": outdoors
   };
 
   // Create overlay object to hold our overlay layer
   var overlayMaps = {
-    Earthquakes: earthquakes,
-    // FaultLines:
+    Earthquakes: earthquakes
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
@@ -85,7 +76,7 @@ d3.json(queryUrl2, function(data2) {
       37.09, -95.71
     ],
     zoom: 5,
-    layers: [streetmap]//, earthquakes]
+    layers: [satellitemap, earthquakes]
   });
 
   // Create a layer control
