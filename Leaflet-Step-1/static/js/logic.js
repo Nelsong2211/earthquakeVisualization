@@ -53,19 +53,24 @@ var overlayMaps = {
     "Fault Lines": tectonicPlates
 };
 
-// Create Map, Passing In satelliteMap & earthquakes as Default Layers to Display on Load
+// Create the map with our layers
+// center in Niger and zoom 2.4 to get a center map
+//  Outdoors & earthquakes as Default
 var myMap = L.map("map", {
     center: [17.6078, 8.0817],
     zoom: 2.4,
     layers: [outdoorsMap, earthquakes]
 });
 
-// Create a Layer Control + Pass in baseMaps and overlayMaps + Add the Layer Control to the Map
+// Create a Layer Control
+// Pass in baseMaps and overlayMaps 
 L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
+    //Add the Layer Control to the Map
 }).addTo(myMap);
 
 //=====================================================
+//  function get color for every magnitude.
 function getColor(d) {
 
     return d < 1 ? 'rgb(255,255,178)' : 
@@ -77,29 +82,32 @@ function getColor(d) {
 //===================================================
 
 // Retrieve earthquakes_URL (USGS Earthquakes GeoJSON Data) with D3
-d3.json(earthquakes_URL, function(earthquakeData) {
-    // Function to Determine Size of Marker Based on the Magnitude of the Earthquake
-    function markerSize(magnitude) {
+d3.json(earthquakes_URL, function(earthquake_data) {
+    // Function to Determine Size of Marker Based on the Magnitude of each Earthquake
+    // *3 to make it bigger in the map
+    function EarthquakeSize(magnitude) {
         if (magnitude === 0) {
           return 1;
         }
         return magnitude * 3;
     }
-    // Function to Determine Style of Marker Based on the Magnitude of the Earthquake
+    // This function returns the style data for each of the earthquakes we plot on
+    // the map. We pass the magnitude of the earthquake into two separate functions
+    // to calculate the color and radius.
     function styleInfo(feature) {
         return {
           opacity: 1,
           fillOpacity: 0.8,
           fillColor: getColor(feature.properties.mag),
           color: "black",
-          radius: markerSize(feature.properties.mag),
+          radius: EarthquakeSize(feature.properties.mag),
           stroke: true,
           weight: 0.5
         };
     }
 
-    // Create a GeoJSON Layer Containing the Features Array on the earthquakeData Object
-    L.geoJSON(earthquakeData, {
+    // Create a GeoJSON Layer Containing the Features Array on the earthquake_data Object
+    L.geoJSON(earthquake_data, {
         pointToLayer: function(feature, latlng) {
             return L.circleMarker(latlng);
         },
@@ -111,18 +119,19 @@ d3.json(earthquakes_URL, function(earthquakeData) {
             "</h4><hr><p>Date & Time: " + new Date(feature.properties.time) + 
             "</p><hr><p>Magnitude: " + feature.properties.mag + "</p>");
         }
-    // Add earthquakeData to earthquakes LayerGroups 
-    }).addTo(earthquakes);
-    // Add earthquakes Layer to the Map
-    earthquakes.addTo(myMap);
+        // Add earthquakeData to earthquakes LayerGroups 
+        }).addTo(earthquakes);
+        // Add earthquakes Layer to the Map
+        earthquakes.addTo(myMap);
+
 
     // Retrieve plates_URL (Tectonic Plates GeoJSON Data) with D3
-    d3.json(plates_URL, function(plateData) {
-        // Create a GeoJSON Layer the plateData
-        L.geoJson(plateData, {
+    d3.json(plates_URL, function(plate_data) {
+        // Create a GeoJSON Layer the plate_data
+        L.geoJson(plate_data, {
             color: "#ff4d4d",
             weight: 2
-        // Add plateData to tectonicPlates LayerGroups 
+        // Add plate_data to tectonicPlates LayerGroups 
         }).addTo(tectonicPlates);
         // Add tectonicPlates Layer to the Map
         tectonicPlates.addTo(myMap);
