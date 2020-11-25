@@ -1,6 +1,6 @@
 // Earthquakes & Tectonic Plates GeoJSON URL Variables
-var earthquakesURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
-var platesURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
+var earthquakes_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+var plates_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
 // Initialize & Create Two Separate LayerGroups: earthquakes & tectonicPlates
 var earthquakes = new L.LayerGroup();
@@ -76,8 +76,8 @@ function getColor(d) {
 }
 //===================================================
 
-// Retrieve earthquakesURL (USGS Earthquakes GeoJSON Data) with D3
-d3.json(earthquakesURL, function(earthquakeData) {
+// Retrieve earthquakes_URL (USGS Earthquakes GeoJSON Data) with D3
+d3.json(earthquakes_URL, function(earthquakeData) {
     // Function to Determine Size of Marker Based on the Magnitude of the Earthquake
     function markerSize(magnitude) {
         if (magnitude === 0) {
@@ -89,31 +89,15 @@ d3.json(earthquakesURL, function(earthquakeData) {
     function styleInfo(feature) {
         return {
           opacity: 1,
-          fillOpacity: 1,
-          fillColor: chooseColor(feature.properties.mag),
-          color: "#000000",
+          fillOpacity: 0.8,
+          fillColor: getColor(feature.properties.mag),
+          color: "black",
           radius: markerSize(feature.properties.mag),
           stroke: true,
           weight: 0.5
         };
     }
-    // Function to Determine Color of Marker Based on the Magnitude of the Earthquake
-    function chooseColor(magnitude) {
-        switch (true) {
-        case magnitude > 5:
-            return "#581845";
-        case magnitude > 4:
-            return "#900C3F";
-        case magnitude > 3:
-            return "#C70039";
-        case magnitude > 2:
-            return "#FF5733";
-        case magnitude > 1:
-            return "#FFC300";
-        default:
-            return "#DAF7A6";
-        }
-    }
+
     // Create a GeoJSON Layer Containing the Features Array on the earthquakeData Object
     L.geoJSON(earthquakeData, {
         pointToLayer: function(feature, latlng) {
@@ -132,8 +116,8 @@ d3.json(earthquakesURL, function(earthquakeData) {
     // Add earthquakes Layer to the Map
     earthquakes.addTo(myMap);
 
-    // Retrieve platesURL (Tectonic Plates GeoJSON Data) with D3
-    d3.json(platesURL, function(plateData) {
+    // Retrieve plates_URL (Tectonic Plates GeoJSON Data) with D3
+    d3.json(plates_URL, function(plateData) {
         // Create a GeoJSON Layer the plateData
         L.geoJson(plateData, {
             color: "#DC143C",
@@ -162,33 +146,7 @@ legend.onAdd = function (map) {
 
 return div;
 };
-    //================================================
 
-    // // Set Up Legend
-    // var legend = L.control({ position: "bottomright" });
-    // legend.onAdd = function() {
-    //     var div = L.DomUtil.create("div", "info legend"), 
-    //      magnitudeLevels = [0, 1, 2, 3, 4, 5];
-    //      colors = [
-    //         "#DAF7A6",
-    //         "#FFC300",
-    //         "#FF5733",
-    //         "#C70039",
-    //         "#900C3F",
-    //         "#581845"];
-
-    //     div.innerHTML += "<h3>Magnitude</h3>"
-
-    //     for (var i = 0; i < magnitudeLevels.length; i++) {
-    //         div.innerHTML +=
-    //             '<i style="background: ' 
-    //             + colors[i] 
-    //             + '"></i> ' 
-    //             + magnitudeLevels[i] + (magnitudeLevels[i + 1] ? '&ndash;' 
-    //             + magnitudeLevels[i + 1] + '<br>' : '+');
-    //     }
-    //     return div;
-    // };
     // Add Legend to the Map
     legend.addTo(myMap);
 });
