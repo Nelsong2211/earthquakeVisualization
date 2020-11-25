@@ -59,7 +59,7 @@ var overlayMaps = {
 var myMap = L.map("map", {
     center: [17.6078, 8.0817],
     zoom: 2.4,
-    layers: [outdoorsMap, earthquakes]
+    layers: [satelliteMap, earthquakes]
 });
 
 // Create a Layer Control
@@ -128,6 +128,7 @@ d3.json(earthquakes_URL, function(earthquake_data) {
     // Retrieve plates_URL (Tectonic Plates GeoJSON Data) with D3
     d3.json(plates_URL, function(plate_data) {
         // Create a GeoJSON Layer the plate_data
+        //declare width and color
         L.geoJson(plate_data, {
             color: "#ff4d4d",
             weight: 2
@@ -136,21 +137,22 @@ d3.json(earthquakes_URL, function(earthquake_data) {
         // Add tectonicPlates Layer to the Map
         tectonicPlates.addTo(myMap);
     });
-    // ==============================================
-// Here we create a legend control object.
+    
+//  create a legend
+// legent possition
 var legend = L.control({position: 'bottomright'});
-  
-legend.onAdd = function (map) {    
+  // declare magnitude and attribute number.
+legend.onAdd = function () {    
     var div = L.DomUtil.create('div', 'info legend'),
-    grades = [0, 1, 2, 3, 4],
-    labels = [];
+    magnitudeGrades = [0, 1, 2, 3, 4];
+    
 
     div.innerHTML+='Magnitude<br><hr>'
-
-    for (var i = 0; i < grades.length; i++) {
+// atribute  color for each magnitude
+    for (var i = 0; i < magnitudeGrades.length; i++) {
         div.innerHTML +=
-            '<i style="background:' + getColor(grades[i] + 1) + '">&nbsp&nbsp&nbsp&nbsp</i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+            '<i style="background:' + getColor(magnitudeGrades[i] + 1) + '">&nbsp&nbsp&nbsp&nbsp</i> ' +
+            magnitudeGrades[i] + (magnitudeGrades[i + 1] ? '&ndash;' + magnitudeGrades[i + 1] + '<br>' : '+');
     }
 
 return div;
