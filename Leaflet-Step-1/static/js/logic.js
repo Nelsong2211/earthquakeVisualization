@@ -65,6 +65,17 @@ L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
 }).addTo(myMap);
 
+//=====================================================
+function getColor(d) {
+
+    return d < 1 ? 'rgb(255,255,178)' : 
+           d < 2 ? 'rgb(254,204,92)' :
+           d < 3 ? 'rgb(253,141,60)' :
+           d < 4 ? 'rgb(240,59,32)' :
+                   'rgb(189,0,38)';
+}
+//===================================================
+
 // Retrieve earthquakesURL (USGS Earthquakes GeoJSON Data) with D3
 d3.json(earthquakesURL, function(earthquakeData) {
     // Function to Determine Size of Marker Based on the Magnitude of the Earthquake
@@ -134,30 +145,23 @@ d3.json(earthquakesURL, function(earthquakeData) {
     });
     // ==============================================
 // Here we create a legend control object.
-    var legend = L.control({
-        position: "bottomright"
-    });
+var legend = L.control({position: 'bottomright'});
+  
+legend.onAdd = function (map) {    
+    var div = L.DomUtil.create('div', 'info legend'),
+    grades = [0, 1, 2, 3, 4],
+    labels = [];
 
-    legend.onAdd = function() {
-        var div = L.DomUtil.create("div", "info legend");
+    div.innerHTML+='Magnitude<br><hr>'
 
-        var magnitude = [0, 1, 2, 3, 4, 5];
-        var colors = [
-            "#DAF7A6",
-            "#FFC300",
-            "#FF5733",
-            "#C70039",
-            "#900C3F",
-            "#581845"];
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getColor(grades[i] + 1) + '">&nbsp&nbsp&nbsp&nbsp</i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
 
-        // Loop through our intervals and generate a label with a colored square for each interval.
-        for (var i = 0; i < magnitude.length; i++) {
-        div.innerHTML += "<i style='background: "
-            + chooseColor(magnitude[i] + 1) + "'></i> "+
-            magnitude[i] + (magnitude[i + 1] ? "&ndash;" + magnitude[i + 1] + "<br>" : "+");
-        }
-        return div;
-    };
+return div;
+};
     //================================================
 
     // // Set Up Legend
