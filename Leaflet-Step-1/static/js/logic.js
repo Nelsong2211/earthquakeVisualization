@@ -2,11 +2,11 @@
 var earthquakes_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
 var plates_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
-// Initialize & Create Two Separate LayerGroups: earthquakes & tectonicPlates
+// Initialize all of the LayerGroups we'll be using
 var earthquakes = new L.LayerGroup();
 var tectonicPlates = new L.LayerGroup();
 
-// Define Variables for Tile Layers
+// Define Variables for Tile Layers that will be the background of our map
 var satelliteMap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
@@ -14,7 +14,7 @@ var satelliteMap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}
     accessToken: API_KEY
 });
 
-var graymap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+var grayMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
   attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
   tileSize: 512,
   maxZoom: 18,
@@ -23,7 +23,7 @@ var graymap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{
   accessToken: API_KEY
 });
 
-var outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+var outdoorsMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
   attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
   tileSize: 512,
   maxZoom: 18,
@@ -32,7 +32,7 @@ var outdoors = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/
   accessToken: API_KEY
 });
 
-var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+var darkMap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
     id: "dark-v10",
@@ -42,12 +42,12 @@ var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z
 // Define baseMaps Object to Hold Base Layers
 var baseMaps = {
     "Satellite": satelliteMap,
-    "Grayscale": graymap,
-    "Outdoors": outdoors,
-    "Dark Map": darkmap
+    "Grayscale": grayMap,
+    "Outdoors": outdoorsMap,
+    "Dark Map": darkMap
 };
 
-// Create Overlay Object to Hold Overlay Layers
+// Create an overlays object to add to the layer control
 var overlayMaps = {
     "Earthquakes": earthquakes,
     "Fault Lines": tectonicPlates
@@ -55,9 +55,9 @@ var overlayMaps = {
 
 // Create Map, Passing In satelliteMap & earthquakes as Default Layers to Display on Load
 var myMap = L.map("map", {
-    center: [37.09, -95.71],
-    zoom: 4,
-    layers: [outdoors, earthquakes]
+    center: [17.6078, 8.0817],
+    zoom: 2.4,
+    layers: [outdoorsMap, earthquakes]
 });
 
 // Create a Layer Control + Pass in baseMaps and overlayMaps + Add the Layer Control to the Map
@@ -120,7 +120,7 @@ d3.json(earthquakes_URL, function(earthquakeData) {
     d3.json(plates_URL, function(plateData) {
         // Create a GeoJSON Layer the plateData
         L.geoJson(plateData, {
-            color: "#DC143C",
+            color: "#ff4d4d",
             weight: 2
         // Add plateData to tectonicPlates LayerGroups 
         }).addTo(tectonicPlates);
